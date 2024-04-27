@@ -1,0 +1,272 @@
+﻿@using Ngo_One.Models
+@model Ngo_One.Models.AdminModel
+
+@{
+    ViewBag.Title = "Manage_Ngo_Staff";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData data = new ViewData();
+    string idname = string.Empty;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" style="text-align:center;font-weight:600;">Manage Banner</h4>
+
+                    @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert mt-3">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert-success">@TempData["SuccessMessage"]</div>
+                            }
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="alert-danger">@TempData["ErrorMessage"]</div>
+                            }
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Manage_Ngo_Staff", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <div class="form-group">
+                            <label for="exampleInputName1">Staff Name</label>
+                            @Html.EditorFor(model => model.StaffName, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Staff Name", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.StaffName, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            <label>File upload</label>
+                            @Html.EditorFor(model => model.Staff_Image, new { htmlAttributes = new { @class = "form-control-file", @type = "file", @required = "True" } })<br />
+                            <small class="text-danger">(Only png, jpg, jpeg files of size less than or equal to 500KB)</small>
+                            @Html.ValidationMessageFor(model => model.Staff_Image, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputName1">Staff Designation</label>
+                            @Html.EditorFor(model => model.StaffDesignation, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Staff Designation", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.StaffDesignation, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputName1">Seneority Number</label>
+                            @Html.EditorFor(model => model.SeniorityLevel, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Seneority Number", type = "number", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.SeniorityLevel, "", new { @class = "text-danger" })
+                        </div>
+
+                        <button type="submit" class="btn btn-success mr-2">Submit</button>
+                        <button class="btn btn-light">Cancel</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" style="background:#fff;">
+                    <thead>
+                        <tr>
+                            <th>Staff Name</th>
+                            <th>Staff Image</th>
+                            <th>Staff Designation</th>
+                            <th>Staff Seneority</th>
+                            <th>Edit/Update</th>
+                            <th>Disable/Enable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (data.Staff_data().Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4">NO RECORD FOUND</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (AdminModel dt in data.Staff_data())
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="text" name="SName" id="SName" value="@dt.StaffName" class="form-control input-update-width" readonly />
+                                        <input type="hidden" name="StaffId" value="@dt.StaffId" />
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/Content/Images/StaffImages/@dt.Staff_Image" alt="View Document" style="width: 80px; height: 80px;" />
+                                            <div class="ml-2">
+                                                <input type="file" name="SImage" class="form-control-file" readonly />
+                                                <input type="hidden" name="StaffId" value="@dt.StaffId" />
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" name="SName" id="SName" value="@dt.StaffDesignation" class="form-control input-update-width" readonly />
+                                        <input type="hidden" name="StaffId" value="@dt.StaffId" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" name="SName" id="SName" value="@dt.SeniorityLevel" class="form-control input-update-width" readonly />
+                                        <input type="hidden" name="StaffId" value="@dt.StaffId" />
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-info" onclick="openUpdateModal('@dt.StaffId', '@dt.StaffName', '@dt.Staff_Image','@dt.StaffDesignation','@dt.SeniorityLevel')"><i class="fas fa-edit"></i></button>
+                                    </td>
+
+                                    <td>
+                                        <button class="btn btn-danger delete-btn" data-category-id="@dt.StaffId"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+                        {
+                            <tr>
+                                <td colspan="4">
+                                    <div class="alert">
+                                        <p>@TempData["SuccessMessage"]</p>
+                                        <p>@TempData["ErrorMessage"]</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Attach click event to the delete button
+        $('.delete-btn').click(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            var categoryId = $(this).data('category-id');
+
+            // Ask for confirmation before proceeding with the deletion
+            var confirmDelete = confirm('Are you sure you want to delete this data?');
+
+            if (confirmDelete) {
+                // Make an AJAX request to your controller
+                $.ajax({
+                    url: '/Admin/Delete_Ngo_Staff',
+                    type: 'POST',
+                    data: { StaffId: categoryId },
+                    success: function (data) {
+                        // Handle success, e.g., show a success message
+                        alert("Data Deleted Successfull");
+                        // Reload or update the page as needed
+                        location.reload();
+                    },
+                    error: function (error) {
+                        // Handle error, e.g., show an error message
+                        alert('Error: ' + error.responseText);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<!-- Add this script at the end of your HTML file or in the appropriate section -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ... Your existing HTML code ... -->
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Manage_Ngo_Staff_Update", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "updateForm" }))
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.StaffName, "Image Name")
+                        @Html.TextBoxFor(model => model.StaffName, new { @class = "form-control", placeholder = "Branch Name", required = "required", id = "updateSName" })
+                        @Html.ValidationMessageFor(model => model.StaffName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center">
+                            <img id="updateSImagePreview" style="width: 80px; height: 80px;" /><br />
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Staff_Image, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Staff_Image, "Upload File")
+                        <div class="d-flex align-items-center">
+                            <input type="file" name="Staff_Image" class="form-control-file" onchange="previewImage(this, 'updateSImagePreview')" />
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Staff_Image, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.StaffDesignation, "Image Name")
+                        @Html.TextBoxFor(model => model.StaffDesignation, new { @class = "form-control", placeholder = "Branch Name", required = "required", id = "updateStaffDesignation" })
+                        @Html.ValidationMessageFor(model => model.StaffDesignation, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SeniorityLevel, "Image Name")
+                        @Html.TextBoxFor(model => model.SeniorityLevel, new { @class = "form-control", placeholder = "Branch Name", required = "required", id = "updateSeniorityLevel" })
+                        @Html.ValidationMessageFor(model => model.SeniorityLevel, "", new { @class = "text-danger" })
+                    </div>
+
+                    <input type="hidden" name="StaffId" id="updateStaffId" />
+                }
+
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>*@
+                    <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openUpdateModal(StaffId, StaffName, Staff_Image, StaffDesignation, SeniorityLevel) {
+        $("#updateStaffId").val(StaffId);
+        $("#updateSName").val(StaffName);
+        $("#updateSImagePreview").attr("src", "/Content/Images/StaffImages/" + Staff_Image); // Fixed the path
+        $("#updateStaffDesignation").val(StaffDesignation);
+        $("#updateSeniorityLevel").val(SeniorityLevel);
+        $("#updateModal").modal("show");
+    }
+
+    function submitUpdateForm() {
+        $("#updateForm").submit();
+    }
+
+    function previewImage(input, imageElementId) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $("#" + imageElementId).attr("src", e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+</script>
+
+<!-- ... Your existing JavaScript code ... -->
+
+<script>
+    function closeModal() {
+        // Assuming you are using Bootstrap modal
+        $('#updateModal').modal('hide');
+    }
+</script>
+

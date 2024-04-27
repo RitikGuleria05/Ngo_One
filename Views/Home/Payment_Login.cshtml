@@ -1,0 +1,112 @@
+﻿@using Ngo_One.Models
+@model Ngo_One.Models.AdminModel
+
+@{
+    ViewBag.Title = "Payment_Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData data = new ViewData();
+}
+
+<div>
+</div><div class="container">
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" style="text-align:center;font-weight:600;">Donation Form</h4>
+
+                    @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert mt-3">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert-success">@TempData["SuccessMessage"]</div>
+                            }
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="alert-danger">@TempData["ErrorMessage"]</div>
+                            }
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Payment_Login", "Home", FormMethod.Post, new { id = "paymentForm", enctype = "multipart/form-data" }))
+                    {
+                        <div class="col-md-12 row">
+                            <div class="col-md-6 form-group">
+                                <label for="exampleInputName1">Full Name</label>
+                                @Html.EditorFor(model => model.Full_Name, new { htmlAttributes = new { @class = "form-control form-control-lg", required = "required" } })
+                                @Html.ValidationMessageFor(model => model.Full_Name, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Mobile Number</label>
+                                @Html.EditorFor(model => model.Mobile_Number, new { htmlAttributes = new { @class = "form-control form-control-lg", @required = "True" } })<br />
+
+                                @Html.ValidationMessageFor(model => model.Mobile_Number, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-12 row">
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(model => model.Id_Proof, "Id Proof")
+                                @Html.DropDownListFor(model => model.Id_Proof, new SelectList(data.Id_Proof_data(), "Proof_Type", "Proof_Type"), "Select The Id Proof", new { @class = "form-control form-control-lg", id = "exampleFormControlSelect1" })
+                                @Html.ValidationMessageFor(model => model.Id_Proof, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Id Proof Number</label>
+                                @Html.EditorFor(model => model.Id_Proof_Number, new { htmlAttributes = new { @class = "form-control form-control-lg", @required = "True" } })<br />
+
+                                @Html.ValidationMessageFor(model => model.Id_Proof_Number, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-12 row">
+                            <div class="col-md-6 form-group">
+                                <label>Email Id</label>
+                                @Html.EditorFor(model => model.Email_Id, new { htmlAttributes = new { @class = "form-control form-control-lg", @required = "True" } })<br />
+
+                                @Html.ValidationMessageFor(model => model.Email_Id, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Amount</label>
+                                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control form-control-lg", @required = "True" } })<br />
+
+                                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-12 row">
+                            <div class="col-md-6 form-group" style="margin-bottom:3rem;">
+                                @Html.LabelFor(model => model.Donation_Mode, "Donation Mode")
+                                @Html.DropDownListFor(model => model.Donation_Mode, new SelectList(data.Donation_Mode_data(), "Donation_Mode_Name", "Donation_Mode_Name"), "Select The Donation mode", new { @class = "form-control form-control-lg", id = "exampleFormControlSelect1" })
+                                @Html.ValidationMessageFor(model => model.Donation_Mode, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6 form-group" style="margin-bottom:3rem;">
+                                @Html.LabelFor(model => model.Donation_Type, "Donation Type")
+                                @Html.DropDownListFor(model => model.Donation_Type, new SelectList(data.Donation_Type_data(), "Donation_Name", "Donation_Name"), "Select Donation Type", new { @class = "form-control form-control-lg", id = "exampleFormControlSelect1" })
+                                @Html.ValidationMessageFor(model => model.Donation_Type, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-12 row">
+                            <div class="col-md-12 form-group" style="margin-bottom:3rem;">
+                                @Html.LabelFor(model => model.Section_Code, "Section Code")
+                                @Html.DropDownListFor(model => model.Section_Code, new SelectList(data.Section_Code_data(), "Section_Name", "Section_Name"), "Select a Section", new { @class = "form-control form-control-lg", id = "exampleFormControlSelect1" })
+                                @Html.ValidationMessageFor(model => model.Section_Code, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                            
+
+                            <div class="col-md-12 form-group">
+                                <label>Address</label>
+                                @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @required = "True", style = "width: 100%;" })<br />
+
+                                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="=col-md-12" style="text-align:center">
+                                <button type="submit" class="btn btn-success mr-2" style="padding:10px 40px;">Pay Now</button>
+                            </div>
+                            }
+                        </div>
+                    </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,21 @@
+﻿@model Ngo_One.Models.AdminModel
+
+@{
+    ViewBag.Title = "Fee_Result";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-12 col-md-11 col-lg-7 col-xl-6 mx-auto" style="background:white;padding:2%;margin:2%;">
+            <div class="app-card text-center shadow-sm">
+                <img src="~/Content/img/@TempData["Registration-Result-Img"]" alt="Result Image" style="width:40%" />
+                <br /><br />
+                <p>@TempData["Payment-Result"]</p>
+                <br /><br />
+                <p>Hello</p>
+                <a class="btn btn-primary" href="@Url.Action("Index","Home")">Go to home page</a>
+            </div>
+        </div><!--//col-->
+    </div><!--//row-->
+</div><!--//container-->

@@ -1,0 +1,304 @@
+﻿@using Ngo_One.Models
+@model Ngo_One.Models.AdminModel
+
+@{
+    ViewBag.Title = "Manage_Gallery";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData data = new ViewData();
+    string idname = string.Empty;
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" style="text-align:center;font-weight:600;">Manage Gallery</h4>
+
+                    @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert mt-3">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert-success">@TempData["SuccessMessage"]</div>
+                            }
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="alert-danger">@TempData["ErrorMessage"]</div>
+                            }
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Manage_Gallery", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <div class="form-group">
+                            <label for="exampleInputName1">Image Name</label>
+                            @Html.EditorFor(model => model.Image_Name, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Image Name", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.Image_Name, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label>File upload</label>
+                            @Html.EditorFor(model => model.Gallery_Image, new { htmlAttributes = new { @class = "form-control-file", @type = "file", @required = "True" } })<br />
+                            <small class="text-danger">(Only png, jpg, jpeg files of size less than or equal to 500KB)</small>
+                            @Html.ValidationMessageFor(model => model.Gallery_Image, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Gallery_Image_Category, "Choose Category")
+                            @Html.DropDownListFor(model => model.Gallery_Image_Category, new SelectList(data.Gallery_Category_data(), "Ngo_Category_Name", "Ngo_Category_Name"), new { @class = "form-control form-control-lg", id = "exampleFormControlSelect1" })
+                            @Html.ValidationMessageFor(model => model.Gallery_Image_Category, "", new { @class = "text-danger" })
+                        </div>
+                        <button type="submit" class="btn btn-success mr-2">Submit</button>
+                        <button class="btn btn-light">Cancel</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" style="background:#fff;">
+                    <thead>
+                        <tr>
+                            <th>Edit/Update</th>
+                            <th>Disable/Enable</th>
+                            <th>Title</th>
+                            <th>File</th>
+                            <th>Image Category</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (data.Gallery_data().Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4">NO RECORD FOUND</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (AdminModel dt in data.Gallery_data())
+                            {
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn btn-info" onclick="openUpdateModal('@dt.Image_Id', '@dt.Image_Name', '@dt.Gallery_Image', '@dt.Gallery_Image_Category')"><i class="fas fa-edit"></i></button>
+                                    </td>
+
+                                    <td>
+                                        @if (dt.Image_Status == "0")
+                                        {
+                                            <a class="btn btn-danger" href="" id="enable_@dt.Image_Id">Enable</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-danger" href="" id="disable_@dt.Image_Id">Disable</a>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <input type="text" name="SName" id="SName" value="@dt.Image_Name" class="form-control input-update-width" readonly />
+                                        <input type="hidden" name="Image_Id" value="@dt.Image_Id" />
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/Content/Images/GalleryImages/@dt.Gallery_Image" alt="View Document" style="width: 80px; height: 80px;" />
+                                            <div class="ml-2">
+                                                <input type="hidden" name="Image_Id" value="@dt.Image_Id" />
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @Html.DropDownListFor(model => model.Gallery_Image_Category, new SelectList(data.Gallery_Category_data(), "Ngo_Category_Name", "Ngo_Category_Name", dt.SelectedCategory), new { @class = "form-control form-control-lg", id = "exampleFormControlSelect1", @readonly = "readonly" })
+                                        <input type="hidden" name="Image_Id" value="@dt.Image_Id" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger delete-btn" data-category-id="@dt.Image_Id"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                                <script>
+    $(document).ready(function () {
+        $("#enable_@dt.Image_Id").click(function () {
+            if (confirm("Are you sure you want to enable this Record?")) {
+                $.post("@Url.Action("Manage_Gallery_Image_Enable", "Admin")",
+                    {
+                        Image_Id: @dt.Image_Id
+                    },
+                    function (data) {
+                        if (data.success) {
+                            // Reload the page if the controller action is successful
+                            location.reload();
+                        } else {
+                            // Handle any errors or show a message if needed
+                            alert("Failed to enable the record. Please try again.");
+                        }
+                    }
+                );
+            }
+        });
+
+        $("#disable_@dt.Image_Id").click(function () {
+            if (confirm("Are you sure you want to disable this Record?")) {
+                $.post("@Url.Action("Manage_Gallery_Image_Disable", "Admin")",
+                    {
+                        Image_Id: @dt.Image_Id
+                    },
+                    function (data) {
+                        if (data.success) {
+                            // Reload the page if the controller action is successful
+                            location.reload();
+                        } else {
+                            // Handle any errors or show a message if needed
+                            alert("Failed to disable the record. Please try again.");
+                        }
+                    }
+                );
+            }
+        });
+    });
+                                </script>
+
+
+                            }
+                        }
+
+                        @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+                        {
+                            <tr>
+                                <td colspan="4">
+                                    <div class="alert">
+                                        <p>@TempData["SuccessMessage"]</p>
+                                        <p>@TempData["ErrorMessage"]</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Attach click event to the delete button
+        $('.delete-btn').click(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            var categoryId = $(this).data('category-id');
+
+            // Ask for confirmation before proceeding with the deletion
+            var confirmDelete = confirm('Are you sure you want to delete this data?');
+
+            if (confirmDelete) {
+                // Make an AJAX request to your controller
+                $.ajax({
+                    url: '/Admin/Delete_Gallery_Image',
+                    type: 'POST',
+                    data: { Pid: categoryId },
+                    success: function (data) {
+                        // Handle success, e.g., show a success message
+                        alert("Data Deleted Successfully");
+                        // Reload or update the page as needed
+                        location.reload();
+                    },
+                    error: function (error) {
+                        // Handle error, e.g., show an error message
+                        alert('Error: ' + error.responseText);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
+<!-- Add this script at the end of your HTML file or in the appropriate section -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ... Your existing HTML code ... -->
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Manage_Gallery_Update", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "updateForm" }))
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Image_Name, "Image Name")
+                        @Html.TextBoxFor(model => model.Image_Name, new { @class = "form-control", placeholder = "Branch Name", required = "required", id = "updateSName" })
+                        @Html.ValidationMessageFor(model => model.Image_Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center">
+                            <img id="updateSImagePreview" style="width: 80px; height: 80px;" /><br />
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Gallery_Image, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Gallery_Image, "Upload File")
+                        <div class="d-flex align-items-center">
+                            <input type="file" name="SImage" class="form-control-file" onchange="previewImage(this, 'updateSImagePreview')" />
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Gallery_Image, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Image_Name, "Image Name")
+                        @Html.DropDownListFor(model => model.Gallery_Image_Category, new SelectList(data.Gallery_Category_data(), "Ngo_Category_Name", "Ngo_Category_Name"), new { @class = "form-control form-control-lg", id = "updateCategoryName" })
+                        @Html.ValidationMessageFor(model => model.Gallery_Image_Category, "", new { @class = "text-danger" })
+                    </div>
+
+                    <input type="hidden" name="Image_Id" id="updateImage_Id" />
+                }
+
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>*@
+                    <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openUpdateModal(Image_Id, Image_Name, Gallery_Image, Gallery_Image_Category) {
+        $("#updateImage_Id").val(Image_Id);
+        $("#updateSName").val(Image_Name);
+        $("#updateSImagePreview").attr("src", "/Content/Images/GalleryImages/" + Gallery_Image); // Fixed the path
+        $("#updateCategoryName").val(Gallery_Image_Category);
+        $("#updateModal").modal("show");
+    }
+
+    function submitUpdateForm() {
+        $("#updateForm").submit();
+    }
+
+    function previewImage(input, imageElementId) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $("#" + imageElementId).attr("src", e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+</script>
+
+<!-- ... Your existing JavaScript code ... -->
+
+<script>
+    function closeModal() {
+        // Assuming you are using Bootstrap modal
+        $('#updateModal').modal('hide');
+    }
+</script>

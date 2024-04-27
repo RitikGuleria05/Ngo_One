@@ -1,0 +1,74 @@
+﻿@using Ngo_One.Models
+@model Ngo_One.Models.AdminModel
+
+@{
+    ViewBag.Title = "Manage_Payment_Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData data = new ViewData();
+}
+
+
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <h4 class="card-title" style="text-align:center;font-weight:600;">Donation Record</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" style="background:#fff;">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Mobile Number</th>
+                            <th>Id Proof</th>
+                            <th>Id Proof Number</th>
+                            <th>Email</th>
+                            <th>Payment Amount</th>
+                            <th>User Address</th>
+                            <th>Donation Mode</th>
+                            <th>Donation Type</th>
+                            <th>Section Code</th>
+                            <th>User Payment Id</th>
+                            <th>Transaction Id</th>
+                            <th>Payment Date</th>
+                            <th>Bank Transaction Id</th>
+                            <th>Payment Status</th>
+                            <th>Bank Name</th>
+                            <th>Payment Mode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (data.Payment_data().Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4">NO RECORD FOUND</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (AdminModel dt in data.Payment_data())
+                            {
+                                <tr>
+                                    <td>@dt.Full_Name</td>
+                                    <td>@dt.Mobile_Number</td>
+                                    <td>@dt.Id_Proof</td>
+                                    <td>@dt.Id_Proof_Number</td>
+                                    <td>@dt.Email_Id</td>
+                                    <td>@dt.Amount</td>
+                                    <td>@dt.Address</td>
+                                    <td>@dt.Donation_Mode</td>
+                                    <td>@dt.Donation_Type</td>
+                                    <td>@dt.Section_Code</td>
+                                    <td>@dt.StudentId</td>
+                                    <td>@dt.AtomTransactionId</td>
+                                    <td>@dt.Date</td>
+                                    <td>@dt.BankTransactionId</td>
+                                    <td>@dt.BankStatus</td>
+                                    <td>@dt.BankName</td>
+                                    <td>@dt.Discriminator</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
